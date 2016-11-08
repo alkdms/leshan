@@ -72,13 +72,22 @@ public class DefaultLwM2mNodeDecoder implements LwM2mNodeDecoder {
     public <T extends LwM2mNode> T decode(byte[] content, ContentFormat format, LwM2mPath path, LwM2mModel model,
             Class<T> nodeClass) throws InvalidValueException {
 
-        LOG.debug("Decoding value for path {} and format {}: {}", path, format, content);
+        LOG.debug("Decoding value for path {} and format code {}: {}", path, format.getCode(), content);//zyj modify
         Validate.notNull(path);
+
+        //zyj add
+        if(format.getCode() != ContentFormat.JSON_CODE &&
+                        format.getCode() != ContentFormat.TLV_CODE &&
+                        format.getCode() != ContentFormat.OPAQUE_CODE)
+                format = null;
+        //zyj end
 
         // If no format is given, guess the best one to use.
         if (format == null) {
             format = guessContentType(path, model);
         }
+
+        LOG.debug("decode by format {}", format.getName());//zyj add
 
         // Decode content.
         switch (format.getCode()) {

@@ -205,9 +205,21 @@ public class CaliforniumObservationRegistryImpl
                 LwM2mModel model = modelProvider.getObjectModel(client);
 
                 // decode response
-                List<TimestampedLwM2mNode> content = decoder.decodeTimestampedData(coapResponse.getPayload(),
-                        ContentFormat.fromCode(coapResponse.getOptions().getContentFormat()), observation.getPath(),
-                        model);
+                //zyj add
+                List<TimestampedLwM2mNode> content = null;
+                if(coapResponse.getOptions().getContentFormat() != -1) {
+                    content = decoder.decodeTimestampedData(coapResponse.getPayload(),
+                            ContentFormat.fromCode(coapResponse.getOptions().getContentFormat()), observation.getPath(),
+                            model);
+                } else {
+                    //for ALK830A device client
+                    content = decoder.decodeTimestampedData(coapResponse.getPayload(),
+                    ContentFormat.TEXT, observation.getPath(), model);
+                }
+//                List<TimestampedLwM2mNode> content = decoder.decodeTimestampedData(coapResponse.getPayload(),
+//                        ContentFormat.fromCode(coapResponse.getOptions().getContentFormat()), observation.getPath(),
+//                        model);
+                //zyj end
 
                 // notify all listeners
                 for (ObservationRegistryListener listener : listeners) {
